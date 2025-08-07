@@ -1,82 +1,78 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1 class="mb-4">Gestion des Étudiants</h1>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestion des Étudiants</h2>
+        <button id="refreshBtn" class="btn btn-outline-primary">
+            <i class="fas fa-sync-alt me-1"></i> Actualiser
+        </button>
+    </div>
 
-    <!-- Formulaire de création -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Ajouter un nouvel étudiant</h5>
+    {{-- Formulaire de création --}}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Ajouter un étudiant</h5>
         </div>
         <div class="card-body">
-            <form id="createEtudiantForm">
+            <form id="createEtudiantForm" class="row g-3">
                 @csrf
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="code_permanent" class="form-label">Code Permanent *</label>
-                        <input type="text" class="form-control" id="code_permanent" name="code_permanent" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="nom" class="form-label">Nom complet *</label>
-                        <input type="text" class="form-control" id="nom" name="nom" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="universite" class="form-label">Université *</label>
-                        <select class="form-select" id="universite" name="universite" required>
-                            <option value="">Sélectionner...</option>
-                            <option value="UAD">UAD</option>
-                            <option value="UGB">UGB</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="specialite" class="form-label">Spécialité *</label>
-                        <input type="text" class="form-control" id="specialite" name="specialite" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="nbreEmprunts" class="form-label">Nombre d'emprunts</label>
-                        <input type="number" class="form-control" id="nbreEmprunts" name="nbreEmprunts" value="0" min="0">
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Enregistrer
-                        </button>
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label">Code Permanent</label>
+                    <input type="text" class="form-control" name="code_permanent" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Nom complet</label>
+                    <input type="text" class="form-control" name="nom" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Université</label>
+                    <select class="form-select" name="universite" required>
+                        <option value="UAD">UAD</option>
+                        <option value="UGB">UGB</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Spécialité</label>
+                    <input type="text" class="form-control" name="specialite" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Emprunts</label>
+                    <input type="number" class="form-control" name="nbreEmprunts" value="0" min="0">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i> Enregistrer
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Liste des étudiants -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    {{-- Liste des étudiants --}}
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Liste des étudiants</h5>
-            <div>
-                <button id="refreshBtn" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-sync-alt me-1"></i> Actualiser
-                </button>
-            </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover" id="etudiantsTable">
+                <table class="table table-hover mb-0" id="etudiantsTable">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Code Permanent</th>
-                            <th>Nom</th>
-                            <th>Université</th>
-                            <th>Emprunts</th>
-                            <th>Actions</th>
+                            <th width="5%">ID</th>
+                            <th width="15%">Code Permanent</th>
+                            <th width="20%">Nom</th>
+                            <th width="15%">Université</th>
+                            <th width="20%">Spécialité</th>
+                            <th width="10%">Emprunts</th>
+                            <th width="15%">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr id="loadingRow">
-                            <td colspan="6" class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Chargement...</span>
-                                </div>
-                                <p class="mt-2 mb-0">Chargement des données...</p>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="spinner-border text-primary"></div>
+                                <div class="mt-2">Chargement en cours...</div>
                             </td>
                         </tr>
                     </tbody>
@@ -84,67 +80,34 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal d'édition -->
-    <div class="modal fade" id="editEtudiantModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modifier étudiant</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editEtudiantForm">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" id="edit_id" name="id">
-                        <div class="mb-3">
-                            <label for="edit_code_permanent" class="form-label">Code Permanent</label>
-                            <input type="text" class="form-control" id="edit_code_permanent" name="code_permanent" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_nom" class="form-label">Nom</label>
-                            <input type="text" class="form-control" id="edit_nom" name="nom" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_universite" class="form-label">Université</label>
-                            <select class="form-select" id="edit_universite" name="universite" required>
-                                <option value="UAD">UAD</option>
-                                <option value="UGB">UGB</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_specialite" class="form-label">Spécialité</label>
-                            <input type="text" class="form-control" id="edit_specialite" name="specialite" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_nbreEmprunts" class="form-label">Emprunts</label>
-                            <input type="number" class="form-control" id="edit_nbreEmprunts" name="nbreEmprunts" min="0">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" id="saveChangesBtn" class="btn btn-primary">Enregistrer</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+@endsection
 
+@section('scripts')
 <script>
 $(document).ready(function() {
-    // Initialisation
+    // Configuration de Toastr
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        timeOut: 5000
+    };
+
+    // Chargement initial
     loadEtudiants();
 
-    // Rafraîchissement manuel
+    // Actualisation manuelle
     $('#refreshBtn').click(function() {
         loadEtudiants();
     });
 
-    // Création d'un étudiant
+    // Ajout d'un étudiant
     $('#createEtudiantForm').submit(function(e) {
         e.preventDefault();
+        let btn = $(this).find('button[type="submit"]');
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Enregistrement...');
+
         $.ajax({
             url: '/api/etudiants',
             type: 'POST',
@@ -152,47 +115,73 @@ $(document).ready(function() {
             success: function(response) {
                 $('#createEtudiantForm')[0].reset();
                 loadEtudiants();
-                toastr.success('Étudiant créé avec succès');
+                toastr.success('Étudiant ajouté avec succès');
             },
             error: function(xhr) {
-                let errors = xhr.responseJSON?.errors;
-                if (errors) {
-                    $.each(errors, function(key, value) {
-                        toastr.error(value[0]);
+                if (xhr.status === 422) {
+                    $.each(xhr.responseJSON.errors, function(key, errors) {
+                        toastr.error(errors[0]);
                     });
                 } else {
-                    toastr.error(xhr.responseJSON?.message || 'Erreur lors de la création');
+                    toastr.error('Une erreur est survenue lors de l\'ajout');
                 }
+            },
+            complete: function() {
+                btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Enregistrer');
             }
         });
     });
 
-    // Chargement des étudiants
+    // Suppression d'un étudiant
+    $(document).on('click', '.delete-btn', function() {
+        let id = $(this).data('id');
+        let row = $(this).closest('tr');
+        
+        if (confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) {
+            row.css('opacity', '0.5');
+            
+            $.ajax({
+                url: '/api/etudiants/' + id,
+                type: 'DELETE',
+                success: function(response) {
+                    toastr.success(response.message || 'Étudiant supprimé');
+                    loadEtudiants();
+                },
+                error: function() {
+                    row.css('opacity', '1');
+                    toastr.error('Erreur lors de la suppression');
+                }
+            });
+        }
+    });
+
+    // Fonction de chargement des étudiants
     function loadEtudiants() {
         $('#loadingRow').show();
+        
         $.ajax({
             url: '/api/etudiants',
             type: 'GET',
             dataType: 'json',
             success: function(response) {
-                const tbody = $('#etudiantsTable tbody');
+                let tbody = $('#etudiantsTable tbody');
                 tbody.empty();
                 
-                if (response.status === 'success' && response.data.length > 0) {
+                if (response.data && response.data.length > 0) {
                     $.each(response.data, function(index, etudiant) {
+                        let badgeClass = etudiant.universite === 'UAD' ? 'bg-primary' : 'bg-success';
+                        
                         tbody.append(`
                             <tr>
                                 <td>${etudiant.id}</td>
                                 <td>${etudiant.code_permanent}</td>
                                 <td>${etudiant.nom}</td>
-                                <td><span class="badge bg-${etudiant.universite === 'UAD' ? 'primary' : 'success'}">${etudiant.universite}</span></td>
+                                <td><span class="badge ${badgeClass}">${etudiant.universite}</span></td>
+                                <td>${etudiant.specialite}</td>
                                 <td>${etudiant.nbreEmprunts}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${etudiant.id}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${etudiant.id}">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <button class="btn btn-sm btn-danger delete-btn" data-id="${etudiant.id}">
+                                        <i class="fas fa-trash-alt me-1"></i> Supprimer
                                     </button>
                                 </td>
                             </tr>
@@ -201,18 +190,18 @@ $(document).ready(function() {
                 } else {
                     tbody.append(`
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 Aucun étudiant trouvé
                             </td>
                         </tr>
                     `);
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 $('#etudiantsTable tbody').html(`
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-danger">
-                            ${xhr.responseJSON?.message || 'Erreur lors du chargement des données'}
+                        <td colspan="7" class="text-center text-danger py-4">
+                            Erreur lors du chargement des données
                         </td>
                     </tr>
                 `);
@@ -222,70 +211,6 @@ $(document).ready(function() {
             }
         });
     }
-
-    // Édition d'un étudiant
-    $(document).on('click', '.edit-btn', function() {
-        const id = $(this).data('id');
-        $.ajax({
-            url: `/api/etudiants/${id}`,
-            type: 'GET',
-            success: function(response) {
-                $('#edit_id').val(response.id);
-                $('#edit_code_permanent').val(response.code_permanent);
-                $('#edit_nom').val(response.nom);
-                $('#edit_universite').val(response.universite);
-                $('#edit_specialite').val(response.specialite);
-                $('#edit_nbreEmprunts').val(response.nbreEmprunts);
-                $('#editEtudiantModal').modal('show');
-            },
-            error: function(xhr) {
-                toastr.error(xhr.responseJSON?.message || 'Erreur lors du chargement');
-            }
-        });
-    });
-
-    // Sauvegarde des modifications
-    $('#saveChangesBtn').click(function() {
-        const id = $('#edit_id').val();
-        $.ajax({
-            url: `/api/etudiants/${id}`,
-            type: 'PUT',
-            data: $('#editEtudiantForm').serialize(),
-            success: function(response) {
-                $('#editEtudiantModal').modal('hide');
-                loadEtudiants();
-                toastr.success('Modifications enregistrées');
-            },
-            error: function(xhr) {
-                let errors = xhr.responseJSON?.errors;
-                if (errors) {
-                    $.each(errors, function(key, value) {
-                        toastr.error(value[0]);
-                    });
-                } else {
-                    toastr.error(xhr.responseJSON?.message || 'Erreur lors de la mise à jour');
-                }
-            }
-        });
-    });
-
-    // Suppression d'un étudiant
-    $(document).on('click', '.delete-btn', function() {
-        const id = $(this).data('id');
-        if (confirm('Voulez-vous vraiment supprimer cet étudiant ?')) {
-            $.ajax({
-                url: `/api/etudiants/${id}`,
-                type: 'DELETE',
-                success: function(response) {
-                    loadEtudiants();
-                    toastr.success(response.message || 'Étudiant supprimé');
-                },
-                error: function(xhr) {
-                    toastr.error(xhr.responseJSON?.message || 'Erreur lors de la suppression');
-                }
-            });
-        }
-    });
 });
 </script>
 @endsection

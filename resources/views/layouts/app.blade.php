@@ -18,6 +18,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -66,12 +68,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('livres.index') }}">
                                 <i class="fas fa-book me-1"></i> Livres
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('emprunts.index') }}">
                                 <i class="fas fa-exchange-alt me-1"></i> Emprunts
                             </a>
                         </li>
@@ -124,4 +126,6 @@
 
     @stack('scripts')
 </body>
+@yield('scripts')
+
 </html>
